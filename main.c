@@ -766,7 +766,7 @@ int main (int argc, char* argv[])
             {
                 all_lines_size += 10;
                 all_lines = realloc(all_lines, all_lines_size * sizeof(char*));
-                for (int i = all_lines_used; i < all_lines_size; i++) {
+                for (int i = j; i < all_lines_size; i++) {
                     all_lines[i] = calloc(line_size, sizeof(char));
                 }
             }
