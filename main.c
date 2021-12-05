@@ -19,10 +19,17 @@ typedef struct relacie_str {
     int max_x_size;
 } relacie_str;
 
-typedef struct all_str {
+typedef struct {
     set_str *s;
     relacie_str *r;
 } all_str;
+
+typedef struct {
+    char name;
+    char** array;
+    int size;
+    int used;
+}line;
 
 void set_pars(char *line, all_str *a, int set_num){
     enum{
@@ -43,7 +50,7 @@ void set_pars(char *line, all_str *a, int set_num){
                 {
                     (a+set_num)->s->max_x_size = x;
                     (a+set_num)->s->set = realloc((a+set_num)->s->set, sizeof(char) * ((a+set_num)->s->max_x_size+1) *
-                    ((a+set_num)->s->max_y_size+1));
+                                                                       ((a+set_num)->s->max_y_size+1));
                     (a+set_num)->s->set[x][y] = line[i];
                     y++;
                     if (y > (a+set_num)->s->max_y_size)
@@ -91,7 +98,7 @@ void rel_pars(char *line, all_str *a, int rel_num){
             {
                 if (line[i] != ' ') {
                     (a+rel_num)->r->relacie = realloc((a+rel_num)->r->relacie, sizeof(char) * ((a+rel_num)->r->max_x_size + 1) *
-                    2 * ((a+rel_num)->r->max_z_size + 1));
+                                                                               2 * ((a+rel_num)->r->max_z_size + 1));
                     (a+rel_num)->r->relacie[x][y][z] = line[i];
                     z++;
                     if ((a+rel_num)->r->max_z_size< z)
@@ -110,7 +117,7 @@ void rel_pars(char *line, all_str *a, int rel_num){
                     if ((a+rel_num)->r->max_z_size < z) {
                         (a+rel_num)->r->max_z_size = z;
                         (a+rel_num)->r->relacie = realloc((a+rel_num)->r->relacie, sizeof(char) * ((a+rel_num)->r->max_x_size + 1) *
-                        2 * ((a+rel_num)->r->max_z_size + 1));
+                                                                                   2 * ((a+rel_num)->r->max_z_size + 1));
                     }
                     (a+rel_num)->r->relacie[x][y][z] = line[i];
                     z++;
@@ -278,7 +285,7 @@ void union_(all_str *a, char **tokens)
                 repeat_check = true;
         if (!repeat_check)
             printf("%s", (a+atoi(tokens[2]))->s->set[j]);
-}}
+    }}
 
 void intersect_(all_str *a, char **tokens)
 {
@@ -734,96 +741,115 @@ void struct_memory_free(all_str *a, int counter) {
 
 int main (int argc, char* argv[])
 {
-    FILE *fp = fopen("sets.txt", "r+");
+    FILE *fp = fopen(argv[1], "r");
+    if (fp == NULL)
+    {
+        fprintf(stderr, "File not found \n");
+        return 1;
+    }
     char **all_lines;
-    int i = 0;
-    struct all_str *a;
+    int all_lines_size = 10;
+    int all_lines_used = 0;
+    all_str *a;
     char c;
+
+
+    all_lines = calloc(all_lines_size, sizeof(char*));
+    for (int i = 0; i <10; i++) {
+        all_lines[i] = calloc(30, sizeof(char));
+    }
     int j = 0;
     int k = 0;
-
-    all_lines = calloc(1000, sizeof(char*));
-    for (int i = 0; i <1000; i++)
-        all_lines[i] = calloc(30, sizeof(char));
-    while ((c = getc(fp)) != EOF)
+    int line_size = 31;
+    char* buffer = calloc(line_size, sizeof(char));
+    strcpy(buffer, "");
+    while (!(feof(fp)))
     {
+        c = fgetc(fp);
+        if (c == '\n') {
+            line_size = 31;
+            j++;
+            if (j == all_lines_size)
+            {
+                all_lines_size += 10;
+                all_lines = realloc(all_lines, all_lines_size * sizeof(char*));
+                for (int i = all_lines_used; i < all_lines_size; i++) {
+                    all_lines[i] = calloc(line_size, sizeof(char));
+                }
+            }
+            k = 0;
+            c = fgetc(fp);
+        }
         all_lines[j][k] = c;
         k++;
-        if (k > 30)
-            realloc(all_lines, sizeof(char) * k * 1000);
-        if (c == '\n')
-            j++;
-    }
-
-    while (all_lines[i][0] != EOF)
-    {
-        if (a == NULL)
-            a = calloc(1, sizeof(all_str));
-        else
-            a = realloc(a, sizeof(all_str) * (i +1));
-        switch(all_lines[i][0])
-        {
-            case 'U':
-            {
-                (a+i)->s = calloc(1, sizeof(set_str));
-                if (i != 0) {
-                    fprintf(stderr, "Invalid order \n");
-                    return EXIT_FAILURE;
-                }
-                set_pars(all_lines[i], a, i);
-                printf ("%s \n", all_lines[i]);
-                break;
-            }
-            case 'S':
-            {
-                (a+i)->s = calloc(1, sizeof(set_str));
-                if (i == 0) {
-                    fprintf(stderr, "Invalid order \n");
-                    return EXIT_FAILURE;
-                }
-                set_pars(all_lines[i], a, i);
-                printf ("%s \n", all_lines[i]);
-                break;
-            }
-            case 'R':
-            {
-                (a+i)->r = calloc(1, sizeof(set_str));
-                if (i == 0) {
-                    fprintf(stderr, "Invalid order \n");
-                    return EXIT_FAILURE;
-                }
-                rel_pars(all_lines[i], a, i);
-                printf("%s \n", all_lines[i]);
-                break;
-            }
-            case 'C':
-            {
-                if (i == 0) {
-                    fprintf(stderr, "Invalid order \n");
-                    return EXIT_FAILURE;
-                }
-                char **tokens = operation_pars(all_lines[i]);
-                call_function(a, tokens);
-                break;
-            }
+        if (k + 1== line_size) {
+            line_size += 10;
+            all_lines[j] = realloc(all_lines[j], sizeof(char) * line_size);
         }
-        i++;
-    }
 
+    }
+    for (int i = 0; i < j; i++) {
+        printf("%s\n", all_lines[i]);
+    }
+//    while (all_lines[i][0] != EOF)
+//    {
+//        if (a == NULL)
+//            a = calloc(1, sizeof(all_str));
+//        else
+//            a = realloc(a, sizeof(all_str) * (i +1));
+//        switch(all_lines[i][0])
+//        {
+//            case 'U':
+//            {
+//                (a+i)->s = calloc(1, sizeof(set_str));
+//                if (i != 0) {
+//                    fprintf(stderr, "Invalid order \n");
+//                    return EXIT_FAILURE;
+//                }
+//                set_pars(all_lines[i], a, i);
+//                printf ("%s \n", all_lines[i]);
+//                break;
+//            }
+//            case 'S':
+//            {
+//                (a+i)->s = calloc(1, sizeof(set_str));
+//                if (i == 0) {
+//                    fprintf(stderr, "Invalid order \n");
+//                    return EXIT_FAILURE;
+//                }
+//                set_pars(all_lines[i], a, i);
+//                printf ("%s \n", all_lines[i]);
+//                break;
+//            }
+//            case 'R':
+//            {
+//                (a+i)->r = calloc(1, sizeof(set_str));
+//                if (i == 0) {
+//                    fprintf(stderr, "Invalid order \n");
+//                    return EXIT_FAILURE;
+//                }
+//                rel_pars(all_lines[i], a, i);
+//                printf("%s \n", all_lines[i]);
+//                break;
+//            }
+//            case 'C':
+//            {
+//                if (i == 0) {
+//                    fprintf(stderr, "Invalid order \n");
+//                    return EXIT_FAILURE;
+//                }
+//                char **tokens = operation_pars(all_lines[i]);
+//                call_function(a, tokens);
+//                break;
+//            }
+//        }
+//        i++;
+//    }
+    fclose(fp);
+    for (int i = 0; i < j; i++) {
+        free(all_lines[i]);
+    }
+    free(all_lines);
+    free(buffer);
     return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
