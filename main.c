@@ -24,13 +24,6 @@ typedef struct {
     relacie_str *r;
 } all_str;
 
-typedef struct {
-    char name;
-    char** array;
-    int size;
-    int used;
-}line;
-
 void set_pars(char *line, all_str *a, int set_num){
     enum{
         stage_0,
