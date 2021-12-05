@@ -19,7 +19,7 @@ typedef struct relacie_str {
     int max_x_size;
 } relacie_str;
 
-typedef struct {
+typedef struct all_str {
     set_str *s;
     relacie_str *r;
 } all_str;
