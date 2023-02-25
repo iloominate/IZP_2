@@ -65,6 +65,8 @@ void set_pars(char *line, all_str *a, int set_num){
     }
 
 }
+
+
 void rel_pars(char *line, all_str *a, int rel_num){
     enum{
         stage_0,
@@ -132,6 +134,7 @@ void rel_pars(char *line, all_str *a, int rel_num){
 
 }
 
+
 char** operation_pars(char *line){
     char **tokens;
     int size_x = 0;
@@ -197,12 +200,12 @@ int check_operation_num(int i, char **tokens, int operation_number, char **all_l
     return 1;
 }
 
+
 void get_line_num (int i, char **tokens, int operation_number){
     int arg_1 = atoi(tokens[2]);
     int arg_2 = atoi(tokens[3]);
     int arg_3 = atoi(tokens[3]);
 }
-
 
 
 int line_pars(char *line, int size){
@@ -236,8 +239,6 @@ int line_pars(char *line, int size){
 }
 
 
-
-
 bool empty_(all_str *a, char **tokens)
 {
     if ((a+atoi(tokens[1]))->s->set == 0) {
@@ -247,11 +248,15 @@ bool empty_(all_str *a, char **tokens)
     printf("false \n");
     return false;
 };
+
+
 void card_(all_str *a, char **tokens)
 {
     int amount = (a+atoi(tokens[1]))->s->max_x_size;
     printf("%d\n", amount);
 };
+
+
 void complement_(all_str *a, char** tokens)
 {
     bool name_check = false;
@@ -265,6 +270,8 @@ void complement_(all_str *a, char** tokens)
     }
 
 };
+
+
 void union_(all_str *a, char **tokens)
 {
     int tmp = 0;
@@ -280,6 +287,7 @@ void union_(all_str *a, char **tokens)
             printf("%s", (a+atoi(tokens[2]))->s->set[j]);
 }}
 
+
 void intersect_(all_str *a, char **tokens)
 {
     for (int i = 0; (a+atoi(tokens[1]))->s->set[i]; i++)
@@ -293,6 +301,7 @@ void intersect_(all_str *a, char **tokens)
         }
     }
 }
+
 
 void minus_(all_str *a, char **tokens)
 {
@@ -308,6 +317,7 @@ void minus_(all_str *a, char **tokens)
         }
     }
 }
+
 
 bool subseteq_(all_str *a, char **tokens)
 {
@@ -328,6 +338,7 @@ bool subseteq_(all_str *a, char **tokens)
 
 }
 
+
 bool subset_(all_str *a, char **tokens)
 {
     if (subseteq_(a, tokens)){
@@ -337,7 +348,9 @@ bool subset_(all_str *a, char **tokens)
     return false;
 }
 
-bool equals_(all_str *a, char **tokens) {
+
+bool equals_(all_str *a, char **tokens) 
+{
     if (subseteq_(a, tokens)) {
         if ((a + atoi(tokens[1]))->s->max_x_size == (a + atoi(tokens[2]))->s->max_x_size)
             return true;
@@ -345,9 +358,9 @@ bool equals_(all_str *a, char **tokens) {
     return false;
 }
 
+
 bool reflexive_(all_str *a, char **tokens)
 {
-
     int repeat_amount = 0;
     for (int i = 0; (a+atoi(tokens[1]))->r->relacie[i]; i++)
     {
@@ -374,6 +387,7 @@ bool reflexive_(all_str *a, char **tokens)
     return true;
 }
 
+
 bool symmetric_(all_str *a, char **tokens)
 {
     int symm_check = 0;
@@ -399,6 +413,7 @@ bool symmetric_(all_str *a, char **tokens)
     return true;
 }
 
+
 bool antisymmetric_(all_str *a, char **tokens)
 {
     int symm_check = 0;
@@ -419,6 +434,7 @@ bool antisymmetric_(all_str *a, char **tokens)
     }
     return true;
 }
+
 
 bool transitive_(all_str *a, char **tokens)
 {
@@ -447,6 +463,7 @@ bool transitive_(all_str *a, char **tokens)
     return true;
 }
 
+
 bool function_(all_str *a, char **tokens)
 {
     for (int i = 0; (a+atoi(tokens[1]))->r->relacie[i]; i++)
@@ -463,6 +480,7 @@ bool function_(all_str *a, char **tokens)
     return true;
 
 }
+
 
 bool domain_(all_str *a, char **tokens)
 {
@@ -482,6 +500,7 @@ bool domain_(all_str *a, char **tokens)
             printf("%s \n",  (a+atoi(tokens[1]))->r->relacie[i][0]);
     }
 }
+
 
 bool codomain_(all_str *a, char **tokens)
 {
@@ -503,6 +522,7 @@ bool codomain_(all_str *a, char **tokens)
     }
     return true;
 }
+
 
 bool set_in_relation_check(all_str *a, char **tokens)
 {
@@ -565,6 +585,8 @@ bool set_in_relation_check(all_str *a, char **tokens)
     }
     return true;
 }
+
+
 bool injective_ (all_str *a, char **tokens)
 {
     int rel_num = atoi(tokens[1]);
@@ -596,6 +618,7 @@ bool injective_ (all_str *a, char **tokens)
     printf("true \n");
     return true;
 }
+
 
 bool surjective_(all_str *a, char **tokens)
 {
@@ -629,6 +652,7 @@ bool surjective_(all_str *a, char **tokens)
     return false;
 }
 
+
 bool bijective_(all_str *a, char **tokens)
 {
     int rel_num = atoi(tokens[1]);
@@ -660,6 +684,8 @@ bool bijective_(all_str *a, char **tokens)
     printf("true \n");
     return true;
 }
+
+
 void call_function (all_str *a, char **tokens)
 {
     if (strcmp(tokens[0], "empty") == 0)
@@ -704,6 +730,7 @@ void call_function (all_str *a, char **tokens)
         fprintf(stderr, "Invalid operation name \n");
 }
 
+
 void struct_memory_free(all_str *a, int counter) {
     for (int i = 0; i < counter; i++)
     {
@@ -731,6 +758,7 @@ void struct_memory_free(all_str *a, int counter) {
     }
     free(a);
 }
+
 
 int main (int argc, char* argv[])
 {
@@ -812,18 +840,3 @@ int main (int argc, char* argv[])
 
     return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
